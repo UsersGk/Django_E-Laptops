@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+  <!-- Signup Form -->
+  <div class="container mt-8">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header text-center">
+            <h3>Sign Up</h3>
+          </div>
+          <div class="card-body">
+            <form action="signup" method="post">
+              {% if messages %}
+                {% for message in messages %}
+                  {% if message.tags %}
+                    <div class="alert alert-{{ message.tags }} mb-5" role="alert">
+                      {{ message }}
+                    </div>
+                  {% else %}
+                    <div class="alert alert-info mb-5" role="alert">
+                      {{ message }}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {% csrf_token %}
+              {% if error %}
+                <div class="alert alert-danger" role="alert">
+                  {{ error }}
+                </div>
+              {% endif %}
+              <!-- Full Name -->
+              <div class="mb-3 ml-3 mr-3">
+                <label for="fullName" class="form-label">Full Name</label>
+                <input type="text" class="form-control" name="name" id="fullName" value="{{value.name}}" placeholder="Enter your full name">
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3 ml-3 mr-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" name="email" id="email" value="{{value.email}}" placeholder="Enter your email">
+              </div>
+
+              <!-- Password -->
+              <div class="mb-3 ml-3 mr-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" id="password" value="{{value.password}}" placeholder="Enter your password">
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="mb-3 ml-3 mr-3">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" name="confirm" id="confirmPassword" value="{{value.confirm}}" placeholder="Confirm your password">
+              </div>
+
+              <!-- Signup Button -->
+              <div class="d-grid gap-2 ml-3">
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="card-footer text-center">
+            Already have an account? <a href="{% url 'login' %}">Login here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

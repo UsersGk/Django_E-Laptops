@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Message Display</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .countdown-container {
+            margin-top: 20%;
+            text-align: center;
+        }
+        .spinner-border {
+            width: 4rem;
+            height: 4rem;
+        }
+    </style>
+    <script>
+        // Display a message for the given duration
+        const duration = {{ duration }} * 1000; // Convert seconds to milliseconds
+        setTimeout(() => {
+            // Redirect or perform another action after the duration
+            window.location.href = "/"; // Redirect to the home page or any other URL
+        }, duration);
+    </script>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <div class="countdown-container">
+            <!-- Spinner -->
+            <div class="spinner-border text-primary mb-4" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <!-- Message -->
+            <h3 class="text-primary">{{ message }}</h3>
+            <p class="text-secondary">
+                This page will automatically redirect in <span id="countdown" class="fw-bold">{{ duration }}</span> seconds...
+            </p>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS and dependencies (optional, for interactivity) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Countdown logic
+        let remaining = {{ duration }};
+        const countdownElement = document.getElementById('countdown');
+
+        const interval = setInterval(() => {
+            remaining -= 1;
+            countdownElement.textContent = remaining;
+
+            if (remaining <= 0) {
+                clearInterval(interval);
+                window.location.href = "/"; // Redirect to the desired page
+            }
+        }, 1000); // Update every second
+    </script>
+</body>
+</html>

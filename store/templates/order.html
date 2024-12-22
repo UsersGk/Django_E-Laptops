@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Table to display order details -->
+    <table class="table table-bordered table-striped table-hover table-sm">
+        <thead class="thead-dark">
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Status</th>
+                <th>Ordered On</th>
+                <th>Product Image</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for order in order %}
+            <tr>
+                <td>{{ order.product_name }}</td>  <!-- Product Name -->
+                <td>{{ order.qty }}</td>            <!-- Quantity -->
+                <td>RS.{{ order.price }}</td>         <!-- Price -->
+                <td>
+                    {% if order.status == "pending" %}
+                        <span class="badge bg-warning">{{ order.status|capfirst }}</span>
+                    {% elif order.status == "shipped" %}
+                        <span class="badge bg-info">{{ order.status|capfirst }}</span>
+                    {% elif order.status == "delivered" %}
+                        <span class="badge bg-success">{{ order.status|capfirst }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ order.status|capfirst }}</span>
+                    {% endif %}
+                </td>                               <!-- Status -->
+                <td>{{ order.ordered_date|date:"F j, Y, g:i a" }}</td> <!-- Ordered Date -->
+                <td>
+                    {% if order.image %}
+                        <img src="{{ order.image.url }}" alt="{{ order.product_name }}" class="img-fluid" style="max-width: 100px;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/100" alt="No Image Available" class="img-fluid">
+                    {% endif %}
+                </td> <!-- Product Image -->
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,223 @@
+{%extends 'base.html' %}
+{% load static %}
+{% block title%}cart{%endblock title%}
+{%block content%}
+
+    <div class="container mt-5">
+        <h1 class="mb-4">Shopping Cart</h1>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Cart</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Sr no.</th>
+                                    <th>Image</th>
+                                    <th>Product Name</th>
+                                    <th>QTY</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {%for cart in cart%}
+                                <tr>
+                                    <td>{{forloop.counter}}</td>
+                                    <td><img src="{{cart.product.image.url}}" height="80px" width="80px" class="img-fluid" alt="Product Image"></td>
+                                    <td>{{cart.product.name}}</td>
+                                    <td>
+                                        <div class="input-group">
+                                          <button class="minus-cart btn btn-primary" data-pid="{{cart.id}}"  name="prod_id" type="button">-</button>
+                                            <p class="form-control text-center quantity-input">{{cart.quantity}}</p>
+                                            <button class="plus-cart btn btn-primary" data-pid="{{cart.id}}"  name="prod_id" type="button">+</button>
+
+                                        </div>
+                                    </td>
+                                    <td>{{cart.product.price}}</td>
+                                    <td>Rs. <span class="item-total"> </span></td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm remove-cart" data-pid="{{cart.id}}" >Delete</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            {%endfor%}
+                        </table>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0">Total: Rs.<span id="grand-total"> </span> </h4>
+                            <a href="" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#exampleModal">Proceed to Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+     <form action="/initiate/" method="post">
+                   {% csrf_token %}
+ <input type="hidden" name="purchase_order_id" value="{{uuid}}"  id="pid">
+                <div class="mb-3">
+    <label for="Name" class="form-label">Name.</label>
+    <input type="text" class="form-control" id="Name" name="Name">
+  </div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+  </div>
+  <div class="mb-3">
+    <label for="Address" class="form-label">Address</label>
+    <input type="text" class="form-control" id="Address" name="Address">
+  </div>
+         <div class="mb-3">
+    <label for="Mobile" class="form-label">Mobile no.</label>
+    <input type="number" class="form-control" id="Mobile" name="Mobile">
+  </div>
+         <div class="mb-3">
+
+    <input type="hidden" class="form-control" id="amount" name="amount" >
+  </div>
+             <input type="hidden" name="return_url" value="http://127.0.0.1:8000/verify">
+ <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Make payment</button>
+      </div>
+</form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+
+$('.plus-cart').click(function() {
+        var id = $(this).data('pid').toString(); // Get the product ID from the data attribute
+        console.log(id);
+<!--        alert(id);-->
+        fetch('/plus_cart/?prod_id=' + encodeURIComponent(id), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json()) // Parse the response as JSON
+        .then(data => {
+            console.log("Success:", data);
+<!--            alert(data);-->
+               updateTotals();
+            window.location.reload();
+            // Update UI with the response data (e.g., update quantity in the cart)
+        })
+        .catch(error => {
+            console.error("Error:", error);
+<!--            alert("Error updating cart.");-->
+        });
+    });
+   $('.minus-cart').click(function() {
+        var id = $(this).data('pid').toString(); // Get the product ID from the data attribute
+        console.log(id);
+<!--        alert(id);-->
+        fetch('/minus_cart/?prod_id=' + encodeURIComponent(id), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json()) // Parse the response as JSON
+        .then(data => {
+            console.log("Success:", data);
+<!--            alert(data);-->
+               updateTotals();
+            window.location.reload();
+            // Update UI with the response data (e.g., update quantity in the cart)
+        })
+        .catch(error => {
+            console.error("Error:", error);
+<!--            alert("Error updating cart.");-->
+        });
+    });
+
+
+       $('.remove-cart').click(function() {
+        var id = $(this).data('pid').toString(); // Get the product ID from the data attribute
+        console.log(id);
+        var value=confirm("Are you want to delete ?");
+        if(value===true){
+        fetch('/remove_cart/?prod_id=' + encodeURIComponent(id), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json()) // Parse the response as JSON
+        .then(data => {
+            console.log("Success:", data);
+            updateTotals();
+            window.location.reload();
+            // Update UI with the response data (e.g., update quantity in the cart)
+        })
+
+        .catch(error => {
+            console.error("Error:", error);
+            updateTotals();
+                window.location.reload();
+<!--            alert("Error updating cart.");-->
+
+        });
+         }else{
+    console("doesn't delete");
+    }
+    });
+
+
+});
+function updateTotals() {
+    let grandTotal = 0; // Initialize the grand total
+
+    // Iterate through all rows to calculate totals
+    document.querySelectorAll('tbody tr').forEach(row => {
+        // Get quantity and price
+        const quantityElement = row.querySelector('.quantity-input');
+        const priceElement = row.querySelector('td:nth-child(5)'); // 5th column for price
+        const price = parseFloat(priceElement.textContent.trim()); // Parse the price
+        const quantity = parseInt(quantityElement.textContent.trim()); // Parse the quantity
+
+        // Calculate total for the item
+        const itemTotal = price * quantity;
+
+        // Update the item's total in the DOM
+        const itemTotalElement = row.querySelector('.item-total');
+        itemTotalElement.textContent = itemTotal.toFixed(2);
+
+        // Add to the grand total
+        grandTotal += itemTotal;
+    });
+
+    // Update the grand total in the DOM
+    document.getElementById('grand-total').textContent = grandTotal.toFixed(2);
+    document.getElementById('amount').value = grandTotal.toFixed(2);  // Set the value of the input
+}
+
+
+  updateTotals();
+</script>
+{%endblock%}

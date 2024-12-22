@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-lg-2">
+            <div class="list-group">
+                <a href="/?category=" class="list-group-item list-group-item-action">All Products</a>
+                {% for Category in category %}
+                <a href="/?category={{ Category.id }}" class="list-group-item list-group-item-action">{{ Category.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="product" class="col-lg-10">
+            <div class="row mx-auto">
+                {% if search_results %}
+                    {% for product in search_results %}
+                    <div class="card mx-auto mb-3" style="width: 18rem;">
+                        <a href="{% url 'product_details' product.id %}">
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="..." width="200" height="200">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <h6 class="card-text">Rs. {{ product.price }}</h6>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No results found for "{{ query }}".</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
